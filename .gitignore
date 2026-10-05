@@ -22,3 +22,6 @@ backend/eval/results/checkpoints/
 # Hackathon submission material (decks, videos)
 submission/
 submissions/
+
+# Local Claude Code settings
+.claude/
