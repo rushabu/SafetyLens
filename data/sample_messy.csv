@@ -1,0 +1,6 @@
+report_id,report_text,site,report_date,report_type,shift
+MX-1,Rigger stood under a suspended load during the crane lift; no exclusion zone was set up.,Synthetic Site North,2026-02-30,Near Miss,night
+MX-2,,Synthetic Site South,2026-03-01,Unsafe Act,day
+MX-3,Rigger stood under a suspended load during the crane lift; no exclusion zone was set up.,Synthetic Site North,03/02/2026,Near Miss,day
+,Grinding was carried out next to a drum of solvent without a fire watch; sparks landed close to the drum.,,,,
+MX-5,Housekeeping poor near store.,Synthetic Site East,14 Mar 2026,Unsafe Condition,day

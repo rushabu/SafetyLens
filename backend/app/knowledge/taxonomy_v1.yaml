@@ -1,0 +1,119 @@
+# SafetyLens knowledge taxonomy
+# The nine rule IDs/labels follow the IOGP Life-Saving Rules. Scope notes are SafetyLens's
+# own short paraphrases written for classification guidance; they are NOT the official IOGP
+# statements and do not replace them. Official icons are intentionally not reproduced.
+version: taxonomy-v1.0.0
+source:
+  name: IOGP Life-Saving Rules
+  urls:
+    - https://www.iogp.org/workstreams/safety/safety/life-savingrules/
+    - https://www.iogp.org/wp-content/uploads/2018/08/Life-SavingRules-WorkCard.pdf
+  note: Text labels only. Scope notes are SafetyLens paraphrases for prototype use.
+
+life_saving_rules:
+  - id: LSR-01
+    label: Bypassing Safety Controls
+    scope_note: Overriding, disabling, jumpering or inhibiting a safety-critical device, alarm, trip or interlock without authorisation.
+  - id: LSR-02
+    label: Confined Space
+    scope_note: Entry into tanks, vessels, pits or other enclosed spaces with restricted access and potential hazardous atmosphere.
+  - id: LSR-03
+    label: Driving
+    scope_note: Operating vehicles - seat belts, speed, phone use, fatigue, journey management.
+  - id: LSR-04
+    label: Energy Isolation
+    scope_note: Isolating and verifying zero energy (electrical, mechanical, hydraulic, pressure) before work on equipment.
+  - id: LSR-05
+    label: Hot Work
+    scope_note: Welding, cutting, grinding or other ignition sources where flammable material or gas may be present.
+  - id: LSR-06
+    label: Line of Fire
+    scope_note: People positioned where moving, falling, released or pressurised objects or energy could strike or crush them.
+  - id: LSR-07
+    label: Safe Mechanical Lifting
+    scope_note: Crane and mechanical lifting - lift plans, certified rigging, suspended loads, exclusion zones.
+  - id: LSR-08
+    label: Work Authorisation
+    scope_note: Work requiring a permit or authorisation being done without one, outside its scope, or after expiry.
+  - id: LSR-09
+    label: Working at Height
+    scope_note: Work where a person could fall from height - fall protection, edge protection, scaffolds, ladders.
+
+# Hazards kept separate from the official rule list. Never mapped into an LSR by default.
+other_hazards:
+  - id: OH-SLIP_TRIP
+    label: Slips, trips and falls on the same level
+  - id: OH-MANUAL_HANDLING
+    label: Manual handling / ergonomics
+  - id: OH-TOXIC_GAS
+    label: Toxic gas exposure (e.g. H2S) outside confined space
+  - id: OH-CHEMICAL
+    label: Chemical contact or exposure
+  - id: OH-PRESSURE
+    label: Uncontrolled pressure release (process)
+  - id: OH-FIRE
+    label: Fire / explosion not related to hot work
+  - id: OH-ELECTRICAL
+    label: Electrical hazard not related to isolation
+  - id: OH-HOUSEKEEPING
+    label: Housekeeping / access obstruction
+  - id: OH-ENVIRONMENT
+    label: Environmental release
+  - id: OH-PPE
+    label: General PPE non-compliance
+
+# Controlled vocabularies used by both engines so that patterns can be grouped deterministically.
+activity_categories:
+  lifting: Crane / mechanical lifting
+  hot_work: Hot work (welding, cutting, grinding)
+  confined_space_entry: Confined space entry
+  driving: Driving / vehicle operation
+  maintenance: Equipment maintenance / repair
+  work_at_height: Work at height / scaffolding
+  excavation: Excavation / civil works
+  drilling_well_ops: Drilling / well operations
+  pressure_operations: Pressure testing / process operations
+  electrical_work: Electrical work
+  loading_unloading: Loading / unloading / material handling
+  inspection: Inspection / walkdown
+  housekeeping: Housekeeping
+  other: Other activity
+  unknown: Unknown
+
+hazard_categories:
+  fall_from_height: {label: "Fall from height", severity: serious}
+  struck_by_suspended_load: {label: "Struck by suspended load", severity: serious}
+  dropped_object: {label: "Dropped object", severity: serious}
+  hazardous_energy_release: {label: "Unexpected energy release / energisation", severity: serious}
+  electrical_shock: {label: "Electrical shock / arc", severity: serious}
+  hazardous_atmosphere: {label: "Toxic / oxygen-deficient / flammable atmosphere", severity: serious}
+  fire_explosion: {label: "Fire / explosion", severity: serious}
+  vehicle_collision_rollover: {label: "Vehicle collision / rollover / struck by vehicle", severity: serious}
+  caught_between_crush: {label: "Caught between / crush", severity: serious}
+  pressure_release: {label: "Pressurised release / hose whip", severity: serious}
+  slip_trip_same_level: {label: "Slip / trip on same level", severity: minor}
+  manual_handling_strain: {label: "Manual handling strain", severity: minor}
+  minor_cut_abrasion: {label: "Minor cut / abrasion", severity: minor}
+  chemical_contact: {label: "Chemical contact", severity: minor}
+  environmental_release: {label: "Environmental release", severity: minor}
+  other: {label: "Other hazard", severity: unknown}
+
+barrier_categories:
+  fall_protection: {label: "Fall protection (harness, guardrails, edge protection)", rules: [LSR-09]}
+  energy_isolation: {label: "Energy isolation / lockout-tagout", rules: [LSR-04]}
+  work_permit: {label: "Permit to work / authorisation", rules: [LSR-08]}
+  gas_testing: {label: "Gas testing / atmosphere monitoring", rules: [LSR-02, LSR-05]}
+  confined_space_attendant: {label: "Confined space attendant / rescue standby", rules: [LSR-02]}
+  fire_watch_combustibles: {label: "Fire watch / combustible control", rules: [LSR-05]}
+  exclusion_zone: {label: "Exclusion zone / barricade / keep out of line of fire", rules: [LSR-06, LSR-07]}
+  lifting_equipment_integrity: {label: "Lifting equipment inspection / certification", rules: [LSR-07]}
+  lift_planning: {label: "Lift plan / competent supervision", rules: [LSR-07]}
+  safety_system_integrity: {label: "Safety device / interlock / trip integrity", rules: [LSR-01]}
+  vehicle_occupant_protection: {label: "Seat belt / occupant protection", rules: [LSR-03]}
+  safe_driving_behaviour: {label: "Speed / phone / fatigue controls", rules: [LSR-03]}
+  dropped_object_prevention: {label: "Dropped object prevention (tethering, securing)", rules: [LSR-06]}
+  hose_pressure_restraint: {label: "Hose restraint / whip checks / pressure containment", rules: [LSR-06]}
+  machine_guarding: {label: "Machine guarding", rules: [LSR-06]}
+  respiratory_protection: {label: "Respiratory protection (respirator / breathing apparatus)", rules: []}
+  ppe: {label: "Personal protective equipment (general)", rules: []}
+  other: {label: "Other barrier", rules: []}

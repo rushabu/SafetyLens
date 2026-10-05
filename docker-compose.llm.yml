@@ -1,0 +1,14 @@
+# Optional overlay: enable the LLM engine in Docker using the key stored in ./key.txt
+# (mounted as a Docker secret - never baked into the image).
+#   docker compose -f docker-compose.yml -f docker-compose.llm.yml up --build
+# LLM settings (provider, base URL, model, data policy) come from .env.
+services:
+  api:
+    secrets:
+      - llm_api_key
+    environment:
+      LLM_API_KEY_FILE: /run/secrets/llm_api_key
+
+secrets:
+  llm_api_key:
+    file: ./key.txt

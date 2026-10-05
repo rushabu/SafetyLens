@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "api",
+      "runtimeExecutable": "backend/.venv/Scripts/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "--app-dir", "backend", "app.main:app", "--host", "127.0.0.1", "--port", "8765"],
+      "port": 8765,
+      "url": "http://127.0.0.1:8765"
+    },
+    {
+      "name": "web",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "set VITE_API_PROXY=http://127.0.0.1:8765&& npm --prefix frontend run dev"],
+      "port": 5173
+    }
+  ]
+}

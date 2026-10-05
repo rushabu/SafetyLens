@@ -1,0 +1,4 @@
+report_id,report_text,site,report_date,report_type
+EX-001,"During the crane lift of a pipe spool, a rigger walked under the suspended load to guide it. No injury.",Synthetic Site North,2026-03-14,Near Miss
+EX-002,"Pre-use inspection found a frayed sling; it was quarantined and removed from service before use.",Synthetic Site South,2026-03-15,Unsafe Condition
+EX-003,"Housekeeping poor near store.",,,Unsafe Condition

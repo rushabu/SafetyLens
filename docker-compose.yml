@@ -1,0 +1,29 @@
+# SafetyLens - runs without any API key in rule-based baseline mode.
+#   docker compose up --build      ->  http://localhost:8080
+services:
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATABASE_URL: sqlite:////app/data/db/safetylens.db
+    volumes:
+      - safetylens-db:/app/data/db
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  safetylens-db:

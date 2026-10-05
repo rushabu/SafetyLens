@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+backend/.pytest_tmp/
+.pytest_cache/
+# Node
+node_modules/
+frontend/dist/
+# Runtime data and secrets
+data/db/
+.env
+backend/.env
+backend/eval/results/*.json
+!backend/eval/results/.gitkeep
+
+# Secret key files
+key.txt
+*.key
+backend/eval/results/checkpoints/
+
+# Hackathon submission material (decks, videos)
+submission/
+submissions/

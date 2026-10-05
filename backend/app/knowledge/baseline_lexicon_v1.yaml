@@ -1,0 +1,520 @@
+# Deterministic lexicon for the SafetyLens rule-based BASELINE engine.
+# This is hand-written pattern matching, not a trained model. All patterns are
+# case-insensitive Python regular expressions. Every match yields an exact text span.
+version: baseline-lexicon-v1.0.0
+
+# Words that negate a following positive mention within the same clause (NegEx-style).
+negation_triggers: '\b(no|not|never|nobody|none|without|no-one|neither|nor|cannot|n''t)\b|\bno one\b'
+# Words that end a negation scope.
+negation_terminators: '\b(but|however|although|though|while|whilst|when|who|which|that|because|and|by|after|before|as|so)\b|[,;:]'
+negation_window_words: 5
+
+clause_split: ';|,\s*(?=(?:but|however|although|and|which|so|whereas)\b)|\s+(?=but\b)|\s+(?=however\b)|\s+and\s+(?=(?:could|would|might|may)\b)'
+
+modality:
+  historical:
+    - '\blast (year|month|week|quarter)\b'
+    - '\bpreviously\b|\bprevious (incident|event|case|accident|occasion)\b'
+    - '\bin (19|20)\d\d\b'
+    - '\b\d+ (years?|months?) ago\b'
+    - '\btoolbox (talk|meeting)\b'
+    - '\b(safety alert|lessons? learn(ed|t)|refresher|training session|safety stand-?down)\b'
+    - '\breminded (the )?(crew|workers|staff|team|everyone)\b'
+    - '\b(was|were) reminded\b'
+  hypothetical:
+    - '\b(could|would|might|may) (have )?(result(ed)?|lead|led|cause[d]?|been|be|fall(en)?|happen(ed)?|struck|hit|crush(ed)?)\b'
+    - '\bif\b'
+    - '\b(potential|possibility) (to|for|of)\b'
+    - '\brisk of\b'
+    - '\bin case\b'
+  prevented:
+    - '\bbefore (use|the lift|lifting|entry|entering|work (started|began|commenced)|starting|anyone|any personnel|the crew|commencing|the job started)\b'
+    - '\bprior to (use|lifting|the lift|entry|commencing|start(ing)?|work)\b'
+    - '\bquarantined\b'
+    - '\b(removed|taken) (from|out of) service\b'
+    - '\btagged (out of service|as defective|do not use)\b'
+    - '\bidentified (during|in|at) (the )?(pre-?use|pre-?job|pre-?lift|pre-?start|routine)? ?(inspection|check|walkdown)\b'
+    - '\b(did not proceed|was not used|were not used|never used|not put into use)\b'
+
+consequence:
+  - '\b(could|would|might) have (resulted in|led to|caused|been)\b[^.]{0,80}'
+  - '\bpotential (for |of )?(a )?(fatality|fatal|serious injur\w*|life-changing|amputation)[^.]{0,40}'
+  - '\b(fatal(ity)?|life-threatening|killed|amputation)\b'
+
+injection:
+  - '\bignore (all |any |the )?(previous|prior|above|earlier|your) (instructions|rules|prompts?)\b'
+  - '\b(classify|mark|label|tag|rate|treat) (this|the) (report|incident|entry) as\b'
+  - '\b(you are|act as) (an? )?(ai|model|assistant|language model|chatbot)\b'
+  - '\bsystem prompt\b'
+  - '\b(output|respond|reply|return) (only )?(with )?(json|the following)\b'
+  - '\bdisregard (the |all |any )?(rubric|rules|instructions)\b'
+  - '\bnew instructions?\b'
+
+activities:
+  confined_space_entry:
+    - '\bconfined space\b'
+    - '\b(tank|vessel|manhole|sump|pit|silo|drum) entry\b'
+    - '\bentered (the |a )?(\w+ )?(tank|vessel|manhole|sump|pit|silo)\b'
+    - '\binside (the |a )?(\w+ )?(tank|vessel|manhole|sump|silo)\b'
+    - '\bentry into (the |a )?(\w+ )?(tank|vessel|manhole|sump|pit|silo)\b'
+  hot_work:
+    - '\bhot work\b'
+    - '\bweld(ing|er|ed|s)?\b'
+    - '\bgrind(ing|er)\b'
+    - '\b(cutting torch|oxy-?acetylene|flame cutting|brazing|torch cutting|gas cutting)\b'
+  lifting:
+    - '\bcranes?\b'
+    - '\blift(ing)? (operation|plan|activity|supervisor)\b'
+    - '\b(slings?|rigging|shackles?|hoist|chain block|tag ?lines?|banksman|signal(l)?er|suspended load)\b'
+    - '\b(being lifted|was lifting|were lifting|lifted (the|a|over)|was lifted|were lifted)\b'
+    - '\b(during|for|of) the lift\b'
+  work_at_height:
+    - '\bscaffold(ing|s)?\b'
+    - '\bladders?\b'
+    - '\broof\b'
+    - '\bat height\b'
+    - '\b(mewp|man ?basket|elevated (work )?platform|monkey board|pipe ?rack|cherry picker)\b'
+  drilling_well_ops:
+    - '\b(drill(ing)? (floor|rig|pipe|crew)|rig floor|workover|well ?head|wireline|tripping (pipe|in|out)|top drive|rotary table|draw ?works|\bbop\b|mud pump|derrickman|roughneck)\b'
+  driving:
+    - '\b(driv(ing|er|ers)|drove|vehicles?|trucks?|tanker|pick-?up|lorry|bus|journey|convoy)\b'
+  maintenance:
+    - '\b(maintenance|repair(ing|ed)?|servic(ing|ed)|overhaul(ing)?)\b'
+    - '\b(replac(ing|ed)|changing) (the |a )?(seal|filter|valve|belt|gasket|bearing|impeller|coupling)\b'
+    - '\bworking on (the |a )?(pump|motor|compressor|conveyor|valve|panel|gearbox|fan|agitator)\b'
+    - '\b(cleaning|unblocking|clearing|work (was )?(carried out|done) on) (the |a )?(\w+ )?(pump|motor|compressor|conveyor|agitator|machine|mixer|fan)\b'
+    - '\b(isolation of (the|a)|calibration|touch-up painting|painting job)\b'
+  electrical_work:
+    - '\b(electrical|electrician|switchgear|breaker|mcc|busbar|transformer|distribution board)\b'
+  pressure_operations:
+    - '\b(pressure test(ing)?|hydro-?test(ing)?|pigging|depressuri[sz]\w*|flowline|pipeline|separator|manifold)\b'
+    - '\b(sampling|sample point|keep production running|high-level trip|unit was running)\b'
+  excavation:
+    - '\b(excavat(ion|ing|or)|trench(ing)?|digging|backhoe)\b'
+  loading_unloading:
+    - '\b(loading|unloading|offloading|forklift|pallets?|cargo|delivery)\b'
+    - '\bmanual(ly)? (handling|lifting|lifted)\b'
+  other:
+    - '\btoolbox (talk|meeting)\b'
+  housekeeping:
+    - '\b(housekeeping|tidy|clutter(ed)?|walkway (was )?obstructed)\b'
+  inspection:
+    - '\b(inspection|walkdown|walk-?through|audit|site patrol)\b'
+
+# Activity tie-break order (earlier wins).
+activity_priority: [confined_space_entry, hot_work, lifting, work_at_height, drilling_well_ops, driving, maintenance, electrical_work, pressure_operations, excavation, loading_unloading, housekeeping, inspection, other]
+
+hazards:
+  fall_from_height:
+    - '\bat height\b'
+    - '\b(fell|fall|falling) from\b'
+    - '\bscaffold(ing|s)?\b'
+    - '\bladders?\b'
+    - '\b(open|unprotected|unguarded|leading) (edge|hole|opening)\b'
+    - '\b\d+(\.\d+)? ?(m|metres?|meters?|ft|feet) (above|high|up|off the ground|height|level|drop)\b'
+    - '\b(monkey board|derrick|pipe ?rack|elevated (work )?platform|mewp|cherry picker|man ?basket|roof edge)\b'
+    - '\b(floor opening|missing grating)\b'
+    - '\bharness(es)?\b'
+  struck_by_suspended_load:
+    - '\bsuspended load\b'
+    - '\bunder (the |a )?(suspended |raised |lifted )?load\b'
+    - '\bcranes?\b'
+    - '\b(load|basket|bundle|container|spool|pipe section)\b[^.]{0,25}\b(swung|spun|slipped|shifted|fell|dropped|toppled)\b'
+    - '\b(sling|rigging|shackle|hook)\b[^.]{0,20}\b(failed|snapped|parted|broke)\b'
+    - '\b(was|were|being) (lifted|hoisted) over\b'
+  dropped_object:
+    - '\bdropped objects?\b'
+    - '\b(tool|spanner|wrench|hammer|bolt|nut|grating|clamp|clip|coupler|scaffold tube|scaffold board|radio|torch)s?\b[^.]{0,40}\b(fell|dropped|falling|came loose)\b'
+    - '\bfell \d+(\.\d+)? ?(m|metres?|meters?|ft|feet)\b'
+  hazardous_energy_release:
+    - '\b(started|energi[sz]ed|activated|rotated|moved|turned on|switched on|came on)\b[^.]{0,15}\bunexpectedly\b'
+    - '\bunexpected(ly)? (start(ed|-?up)?|energi[sz]ation|movement|release|rotation)\b'
+    - '\b(stored|residual) (energy|pressure)\b'
+    - '\bstill (live|energi[sz]ed|pressuri[sz]ed|running)\b'
+    - '\b(rotating|moving) (parts?|equipment|machinery|shaft)\b'
+  electrical_shock:
+    - '\belectric(al)? shock\b'
+    - '\belectrocut\w*'
+    - '\barc flash\b'
+    - '\blive (wires?|cables?|conductors?|panel|circuit|busbar|terminals?)\b'
+    - '\b(high|medium) voltage\b'
+    - '\bexposed (wires?|conductors?|cables?|terminals?)\b'
+  hazardous_atmosphere:
+    - '\bh2s\b|\bhydrogen sul(ph|f)ide\b'
+    - '\boxygen[- ](deficien\w*|enrich\w*)\b|\blow oxygen\b'
+    - '\btoxic (gas|fumes|atmosphere)\b'
+    - '\bgas (alarm|detector|monitor) (went off|alarmed|sounded|activated)\b'
+    - '\b(lel|ppm)\b'
+    - '\bconfined space\b'
+    - '\b(flammable|explosive|toxic) (atmosphere|gas|vapou?rs?)\b'
+    - '\bgas (release|leak)\b'
+  fire_explosion:
+    - '\bfire\b(?! ?(extinguishers?|watch|blankets?|drill|hydrant|fighting|alarm test|and gas))'
+    - '\bexplo(sion|ded|sive)\b'
+    - '\bignit(e|ed|ion)\b'
+    - '\bflash ?fire\b'
+    - '\bsparks?\b'
+    - '\b(flammable|combustible) (materials?|liquids?|gas|vapou?rs?)\b'
+    - '\bhydrocarbons?\b'
+  vehicle_collision_rollover:
+    - '\b(collision|collided|rolled over|roll-?over|overturned|ran off the road|near[- ]collision|swerved|head-?on)\b'
+    - '\b(vehicle|truck|tanker|car|bus|forklift|pick-?up|trailer|lorry)\b[^.]{0,40}\b(reversing|reversed|hit|struck|collided|nearly hit|almost hit|skidded|overturned)\b'
+    - '\breversing (vehicle|truck|forklift|tanker)\b'
+  caught_between_crush:
+    - '\b(caught|trapped|pinched|crushed)\b(?! (out|up))'
+    - '\b(pinch|nip) ?points?\b'
+    - '\brotating (shaft|coupling|parts?|equipment)\b'
+    - '\bentangle\w*'
+  pressure_release:
+    - '\b(pressuri[sz]ed|under pressure|high[- ]pressure)\b'
+    - '\b(whipp(ed|ing)|burst|blew off|ruptured)\b'
+    - '\btrapped pressure\b'
+    - '\bwhip ?checks?\b'
+  slip_trip_same_level:
+    - '\bslipp(ed|ery)\b'
+    - '\btripped (over|on)\b'
+    - '\btrip(ping)? hazard\b'
+    - '\b(oil|water|grease|mud)\b[^.]{0,15}\b(floor|walkway|deck|stairs)\b'
+    - '\bwet (floor|surface|walkway)\b'
+  manual_handling_strain:
+    - '\bmanual(ly)? (handling|lift(ed|ing)?)\b'
+    - '\b(back|muscle|shoulder) (strain|pain|injury)\b'
+    - '\bawkward (posture|position)\b'
+  minor_cut_abrasion:
+    - '\b(minor|small|superficial) (cut|abrasion|scratch|bruise|laceration)\b'
+    - '\b(cut|grazed|scratched) (his|her|their) (finger|hand|arm|thumb)\b'
+  chemical_contact:
+    - '\b(chemical|acid|caustic|solvent|corrosive|methanol)\b'
+    - '\bsplash(ed)?\b'
+  environmental_release:
+    - '\b(spill|spilled|spillage|sheen|drip tray)\b'
+    - '\b(oil|diesel|crude) (leak|leaked|leaking)\b'
+
+exposure:
+  actual:
+    - '\b(standing|walking|working|positioned|stood|walked|passed|stepped|ducked|was|were)\b (directly )?(under|beneath|below|underneath) (the |a )?(suspended |raised |lifted )?(load|lift|basket|container|bundle|pipe)\b'
+    - '\b(standing|stood|positioned|was|were|stepped|walked)\b (in|into|within) (the )?(line of fire|path|swing radius|drop zone|exclusion zone|red zone)\b'
+    - '\b(entered|went into)\b (the |a )?(\w+ )?(tank|vessel|confined space|pit|manhole|sump|silo|drum|trench)\b'
+    - '\b(passed|swung|moved|travel(l)?ed)\b (directly )?over (his|her|their|the workers''?|the crew''s) heads?\b'
+    - '\b(worked|working|work) on (the |a )?(live|energi[sz]ed|running|pressuri[sz]ed|rotating)\b'
+    - '\b(worker|technician|rigger|scaffolder|painter|operator|electrician|welder|fitter|helper|contractor|employee|person|crew member|roustabout|roughneck|derrickman|entrant|mechanic|driver|he|she|they)s?\b[^.]{0,25}\b(on|at|inside|in|under|below|beneath|over|from|near)\b (the |a |an )?[^.,;]{0,25}\b(scaffold(ing)?|roof|ladder|edge|platform|tank|vessel|pit|load|height|monkey board|derrick|pipe ?rack|line of fire|opening|trench|excavation|sample point|manway)\b'
+    - '\b(working|standing|climbing|stood|leaning|walking)\b (on|at|over|from|near) (the |a |an )?[^.,;]{0,25}\b(height|scaffold(ing)?|roof|ladder|edge|platform|derrick|monkey board|pipe ?rack|opening)\b'
+    - '\b(hand|hands|arm|arms|fingers?|head|leg|body)\b[^.]{0,30}\b(inside|between|into|in the path|in contact with)\b'
+    - '\b(was|were|while|whilst)\b (working on|servicing|repairing|cleaning|maintaining|replacing|changing|adjusting|unblocking|clearing)\b'
+    - '\b(was|were|while|whilst|when)\b (driving|travel(l)?ing|reversing|operating the (vehicle|truck|forklift|tanker|crane))\b'
+    - '\b(welder|welding|grinding|hot work|cutting)\b[^.]{0,30}\b(in progress|being (carried out|done|performed)|ongoing|underway|continued|started|commenced)\b'
+    - '\b(was|were)\b (welding|grinding|cutting|burning)\b'
+    - '\b(landed|fell|dropped|passed|swung)\b[^.]{0,40}\b(near|beside|next to|close to|within|\d+(\.\d+)? ?(m|metres?|meters?|cm|ft|feet|inches) (from|of|away from))\b[^.]{0,20}\b(worker|technician|operator|person|people|employee|crew|rigger|helper|him|her|them|pedestrian|roughneck|roustabout|derrickman|driller|scaffolder|welder|fitter|electrician|mechanic|contractor|banksman)s?\b'
+    - '\b(missed|narrowly missed|nearly (hit|struck)|almost (hit|struck)|struck|hit)\b (a |the )?(worker|technician|operator|person|pedestrian|employee|crew member|rigger|helper|him|her|roughneck|roustabout|derrickman|driller|scaffolder|welder|fitter|electrician|mechanic|contractor|banksman)s?\b'
+    - '\b(worker|technician|rigger|operator|person|employee|crew|entrant|he|she)\b[^.]{0,20}\binside (the |a )?(\w+ )?(tank|vessel|confined space|pit|manhole|sump|silo)\b'
+    - '\b(while|when) (he|she|they) (was|were) inside\b'
+    - '\bcrew (was |were )?(working|present) (below|beneath|underneath|directly below)\b'
+    - '\b(suffered|sustained|received)\b (a |an )?[^.,;]{0,30}\b(injury|bruise|cut|fracture|laceration|burn|strain|graze)\b'
+    - '\bpinned (his|her|their) (arm|hand|leg|foot|body)\b'
+  credible:
+    - '\b(people|personnel|workers|crew|staff|employees|pedestrians|others|operators|technicians|passengers)\b (were |was |remained |still )?(present|nearby|in the vicinity|in the area|working nearby|working in the area|working below|passing)\b'
+    - '\b(busy|occupied|active) (walkway|area|road|work area|deck)\b'
+    - '\bpedestrian (walkway|route|crossing|area)\b'
+    - '\b(scaffold|platform|ladder|walkway|area)\b[^.]{0,20}\b(in use|being used|still in use|used by)\b'
+  none:
+    - '\b(no one|nobody|no-one|no personnel|no workers?|no persons?|no people)\b (was |were )?(in|near|under|below|inside|present|in the vicinity|exposed|in the area|around|nearby|working)\b'
+    - '\barea was (unoccupied|empty|vacant)\b'
+    - '\b(unoccupied|unmanned) (area|deck|module)\b'
+
+barriers:
+  fall_protection:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\b(not|wasn''t|was not|were not|weren''t)\b (wearing|wear|using|attached|clipped|tied|anchored|hooked)\b[^.]{0,25}\b(harness|lanyard|fall arrest|safety line)'
+      - '\b(harness(es)?|lanyards?)\b[^.]{0,30}\b(not|wasn''t|was not|were not|weren''t)\b (attached|clipped|tied|anchored|hooked|connected|worn|used)\b'
+      - '\bwithout (a |any |his |her |their )?(safety )?(harness|lanyard|fall protection|fall arrest|tie-?off)\b'
+      - '\bno (safety )?(harness|lanyard|fall protection|fall arrest|guard ?rails?|hand ?rails?|edge protection|toe ?boards?)\b'
+      - '\b(unclipped|untied|not tied off)\b'
+      - '\b(guard ?rails?|hand ?rails?|edge protection|toe ?boards?|kick ?plates?)\b[^.]{0,60}\b(missing|removed|broken|damaged|not (installed|in place|fitted))\b'
+      - '\b(missing|removed|broken|damaged) (guard ?rails?|hand ?rails?|edge protection|toe ?boards?)\b'
+      - '\b(open|unprotected|unguarded|unbarricaded) (edge|hole|opening|floor opening)\b'
+      - '\bgrating\b[^.]{0,20}\b(removed|missing|open)\b'
+    effective:
+      - '\b(harness(es)?|lanyards?)\b[^.]{0,30}\b(attached|clipped( on| in)?|tied off|anchored|hooked)\b'
+      - '\b100 ?% tie-?off\b'
+      - '\b(clipped on|clipped in|tied off)\b'
+      - '\b(guard ?rails?|hand ?rails?|edge protection)\b[^.]{0,20}\b(in place|installed|intact|fitted)\b'
+  energy_isolation:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\bnot (been )?(isolated|locked out|tagged out|de-?energi[sz]ed|depressuri[sz]ed|drained|bled down|vented)\b'
+      - '\b(isolation|lockout|lock-?out|loto|lock and tag)\b[^.]{0,30}\b(not|wasn''t|was not|had not been|never)\b (applied|done|carried out|verified|performed|in place|completed|installed)\b'
+      - '\bwithout (a |any |proper |prior )?(isolation|isolating|lockout|lock-?out|loto|locking out|de-?energi[sz]ing|zero[- ]energy)\b'
+      - '\bno (isolation|lockout|lock-?out|loto|locks?|zero[- ]energy (check|test|verification))\b'
+      - '\b(started|energi[sz]ed|activated|rotated|moved|turned on|switched on|came on|pressuri[sz]ed)\b[^.]{0,15}\bunexpectedly\b'
+      - '\bunexpected(ly)? (start(ed|-?up)?|energi[sz]ation|movement|release|rotation)\b'
+      - '\b(still|remained) (live|energi[sz]ed|pressuri[sz]ed|under pressure|running)\b'
+      - '\b(locks?|tags?|isolation)\b[^.]{0,20}\b(removed|missing|bypassed)\b'
+    effective:
+      - '\b(isolated|locked out|locked and tagged|tagged out|de-?energi[sz]ed)\b[^.]{0,30}\b(verified|confirmed|tested|checked)\b'
+      - '\b(isolation|lockout|loto|zero[- ]energy)\b[^.]{0,25}\b(verified|confirmed|tested|in place|applied|completed)\b'
+      - '\btry[- ]?(start|out)\b[^.]{0,15}\b(performed|done|completed|carried out|confirmed)\b'
+      - '\blocked (out )?(and|&) tagged\b'
+  work_permit:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\bwithout (a |any |the |an )?(valid |approved |signed )?(hot work |work |confined space entry |entry |excavation )?permit\b'
+      - '\bno (valid |hot work |work |entry )?permit\b'
+      - '\bpermit\b[^.]{0,30}\b(had )?(expired|lapsed|not (been )?(issued|signed|approved|obtained|raised|in place|valid|extended))\b'
+      - '\b(expired|invalid|unsigned|out-?of-?date) (work |hot work |entry )?permit\b'
+      - '\b(outside|beyond|not covered by|not included in) (the )?(scope of )?(the )?permit\b'
+      - '\bpermit\b[^.]{0,20}\b(did not cover|didn''t cover)\b'
+      - '\bunauthori[sz]ed (work|entry|job|task)\b'
+    effective:
+      - '\bpermit\b[^.]{0,30}\b(was |had been |were )?(issued|in place|valid|signed|approved|obtained|displayed|reviewed)\b'
+      - '\b(under|with) (a |an |the )?(valid |approved |signed )?(hot work |work |entry |confined space )?permit\b'
+      - '\b(valid|approved|signed) (hot work |work |entry )?permit\b'
+  gas_testing:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\b(gas test(ing)?|atmospheric test(ing)?|atmosphere)\b[^.]{0,30}\b(not|wasn''t|was not|had not been|never)\b (done|carried out|performed|conducted|completed|tested|monitored|checked)\b'
+      - '\bwithout (a |any |prior )?(gas test(ing)?|atmospheric test(ing)?|testing the atmosphere|gas monitoring|gas detect\w*)\b'
+      - '\bno (gas test(ing)?|atmospheric test(ing)?|gas monitor(ing)?|gas detector|portable gas monitor)\b'
+      - '\bgas (detector|monitor)\b[^.]{0,25}\b(not (calibrated|working|available|switched on|bump tested)|faulty|switched off|out of calibration|missing)\b'
+      - '\b(not|never) (gas tested|tested for gas)\b'
+    effective:
+      - '\b(gas test(ing)?|atmospheric test(ing)?|atmosphere)\b[^.]{0,30}\b(done|carried out|performed|completed|clear|satisfactory|within limits|monitored|tested)\b'
+      - '\b(gas[- ]tested|tested for gas)\b'
+      - '\bcontinuous (gas )?monitoring\b[^.]{0,15}\b(in place|in use|provided)\b'
+      - '\bgas (detector|monitor) (alarmed|was worn|in use|sounded)\b'
+  confined_space_attendant:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\bno (standby|attendant|hole ?watch|rescue (plan|team|standby))\b'
+      - '\bwithout (a |an )?(standby|attendant|hole ?watch|rescue plan)\b'
+      - '\b(standby|attendant|hole ?watch)\b[^.]{0,25}\b(left|absent|not present|was not present|walked away|abandoned)\b'
+    effective:
+      - '\b(standby|attendant|hole ?watch)\b[^.]{0,25}\b(present|in attendance|stationed|at the (entry|entrance|manway)|maintained)\b'
+      - '\brescue (plan|team|equipment)\b[^.]{0,20}\b(in place|available|ready)\b'
+  fire_watch_combustibles:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\bno (fire ?watch|fire extinguisher|fire blanket)\b'
+      - '\bwithout (a )?(fire ?watch|fire extinguisher)\b'
+      - '\bfire ?watch\b[^.]{0,20}\b(left|absent|not (present|assigned|available))\b'
+      - '\b(combustibles?|flammables?|flammable materials?|oily rags|hydrocarbons?)\b[^.]{0,30}\b(not (removed|cleared|covered|protected)|left (nearby|in place|close)|stored nearby|nearby|close by)\b'
+      - '\bsparks?\b[^.]{0,30}\b(fell|landed|falling|reached|onto|into)\b'
+    effective:
+      - '\bfire ?watch\b[^.]{0,20}\b(in place|present|assigned|posted|maintained|stationed)\b'
+      - '\b(combustibles?|flammables?)\b[^.]{0,20}\b(removed|cleared|covered)\b'
+      - '\b(fire blankets?|spark containment|welding screens?|welding habitat)\b[^.]{0,20}\b(in place|installed|used)\b'
+  exclusion_zone:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\bno (barricade|barricading|exclusion zone|barrier tape|cordon|banksman|spotter|flagman)\b'
+      - '\bwithout (a |an )?(barricade|exclusion zone|cordon|banksman|spotter|flagman)\b'
+      - '\b(barricade|barrier tape|exclusion zone|cordon|hard barrier)\b[^.]{0,25}\b(removed|breached|ignored|not (in place|established|maintained|set up|respected)|crossed)\b'
+      - '\b(walked|walking|stood|standing|passed|stepped|entered|ducked|positioned|was|were)\b (directly )?(under|beneath|below|underneath|into) (the |a )?(suspended |raised |lifted )?(load|lift|exclusion zone|drop zone|swing radius|line of fire)\b'
+      - '\b(standing|stood|positioned|was|were)\b in the line of fire\b'
+      - '\bentered (the )?(barricaded|restricted|cordoned)\b'
+    effective:
+      - '\b(barricaded|cordoned off)\b'
+      - '\bexclusion zone\b[^.]{0,15}\b(was |had been )?(established|maintained|in place|set up|enforced|respected)\b'
+      - '\b(barricade|hard barrier|cordon)\b[^.]{0,20}\b(in place|installed|erected|maintained)\b'
+      - '\b(banksman|spotter|flagman)\b[^.]{0,20}\b(present|in place|assigned|guided|directing|used)\b'
+      - '\barea (was )?(cleared|kept clear) of (all )?(personnel|people|workers)\b'
+  lifting_equipment_integrity:
+    critical: true
+    on_conflict: effective
+    failed:
+      - '\b(sling|shackle|hook|wire rope|rigging|lifting gear|chain block|lifting lug|pad ?eye|webbing)s?\b[^.]{0,30}\b(damaged|frayed|cut|kinked|corroded|uncertified|not certified|out of (date|certification)|expired|not inspected|overdue|worn|deformed|broken|failed|snapped|parted)\b'
+      - '\b(damaged|frayed|uncertified|untagged|uninspected|defective|expired) (slings?|shackles?|hooks?|wire ropes?|rigging|lifting gear|chain blocks?|webbing)\b'
+      - '\b(safety )?latch\b[^.]{0,20}\b(missing|broken|damaged|tied back|not (working|fitted))\b'
+      - '\b(overload(ed)?|exceed(ed|ing)? (the )?(swl|safe working load|wll|rated capacity))\b'
+    effective:
+      - '\b(quarantined|removed from service|taken out of service)\b'
+      - '\btagged (out of service|as defective|do not use)\b'
+      - '\b(sling|shackle|rigging|lifting gear|lifting equipment)s?\b[^.]{0,30}\b(inspected|certified|colou?r[- ]coded|in date|within certification)\b'
+  lift_planning:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\bwithout (a |an )?(lift(ing)? plan|rigger|banksman|signal(l)?er|tag ?lines?|competent (rigger|person))\b'
+      - '\bno (lift(ing)? plan|tag ?lines?|signal(l)?er|banksman|rigger)\b'
+      - '\blift(ing)? plan\b[^.]{0,20}\b(not (prepared|followed|approved|available|reviewed)|missing)\b'
+      - '\b(uncertified|unqualified|untrained|non-?competent) (crane )?(operator|rigger|banksman)\b'
+      - '\b(load|basket|bundle|container|spool)\b[^.]{0,25}\b(swung|spun|slipped|shifted|fell|dropped|toppled|tilted)\b'
+    effective:
+      - '\blift(ing)? plan\b[^.]{0,20}\b(approved|in place|reviewed|followed|prepared)\b'
+      - '\btag ?lines? (were |was )?(used|attached|in use)\b'
+  safety_system_integrity:
+    critical: true
+    on_conflict: effective
+    failed:
+      - '\b(bypass(ed|ing)?|overrid(den|ing|e)|disabled|inhibited|jumper(ed)?|defeated|switched off|taped over|wedged|muted|silenced)\b[^.]{0,30}\b(interlock|alarm|trip|esd|shutdown|safety (device|valve|switch|system)|psv|prv|gas detector|limit switch|sensor|fire and gas|f&g|dead ?man)'
+      - '\b(interlock|alarm|trip|esd|shutdown system|safety (device|valve|switch|system)|psv|prv|limit switch|sensor|fire and gas|f&g|gas detector|dead ?man)s?\b[^.]{0,60}\b(was|were |had been )?(bypassed|overridden|disabled|inhibited|jumpered|defeated|switched off|taped over|wedged|muted|silenced)\b'
+    effective:
+      - '\b(bypass|override|inhibit)\w*\b[^.]{0,40}\b(authori[sz]ed|approved|under (moc|management of change)|risk[- ]assessed|logged)\b'
+      - '\b(interlock|trip|esd|alarm|shutdown|safety valve|psv)\b[^.]{0,25}\b(worked|activated|functioned|operated (as designed|correctly)|tripped)\b'
+  vehicle_occupant_protection:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\b(not|wasn''t|was not|were not|weren''t)\b (wearing|wear|using) (a |his |her |their )?seat ?belts?\b'
+      - '\bwithout (a |his |her |their )?seat ?belts?\b'
+      - '\bseat ?belts?\b[^.]{0,20}\b(not (worn|used|fastened|on)|unfastened|undone)\b'
+      - '\b(unbelted|no seat ?belt)\b'
+    effective:
+      - '\bseat ?belts? (was |were )?(worn|fastened|on|used)\b'
+      - '\bwearing (a |his |her |their )?seat ?belts?\b'
+  safe_driving_behaviour:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\b(using|on|talking on|texting on|looking at|holding) (a |his |her |their )?(mobile |cell )?phone\b[^.]{0,30}\b(while|whilst) (driving|operating|reversing)\b'
+      - '\b(while|whilst) driving\b[^.]{0,30}\b(phone|texting|text message)\b'
+      - '\b(speeding|over-?speeding)\b'
+      - '\bexceed(ed|ing)? (the )?(site |posted )?speed limit\b'
+      - '\b\d+ ?km/?h in a \d+ ?km/?h\b'
+      - '\b(fell asleep|dozed off|fatigued|drowsy)\b[^.]{0,30}\b(wheel|driving)\b'
+      - '\b(overtook|overtaking)\b[^.]{0,30}\b(blind|bend|crest|double line)\b'
+      - '\bran (a |the )?(red light|stop sign)\b'
+      - '\bwithout (a |an )?journey management plan\b'
+    effective:
+      - '\b(within|below) (the )?speed limit\b'
+      - '\bjourney management plan\b[^.]{0,20}\b(followed|in place|approved)\b'
+  dropped_object_prevention:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\b(tool|spanner|wrench|hammer|bolt|nut|grating|clamp|clip|coupler|scaffold tube|scaffold board|radio|torch|object)s?\b[^.]{0,40}\b(fell|dropped|falling|was dropped|came loose)\b'
+      - '\bdropped objects?\b'
+      - '\b(not|un)[- ]?(tethered|secured|lashed)\b'
+      - '\bwithout (a )?(tool )?(tether|lanyard|lashing)s?\b'
+      - '\bloose (tools?|objects?|items?|materials?)\b[^.]{0,20}\b(at height|on the (platform|scaffold|deck|monkey board))\b'
+    effective:
+      - '\b(tools?|objects?|items?|equipment)\b[^.]{0,20}\b(tethered|secured|lashed)\b'
+      - '\btool lanyards? (were |was )?(used|in use|fitted)\b'
+  hose_pressure_restraint:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\bno whip ?checks?\b'
+      - '\bwithout (a |any )?(whip ?checks?|restraints?|hose restraints?)\b'
+      - '\b(hose|line|fitting|coupling|cap|plug|flange)s?\b[^.]{0,30}\b(whipp(ed|ing)|burst|blew off|parted|ruptured|came apart|separated|not (restrained|secured|pinned))\b'
+      - '\bwhip ?checks?\b[^.]{0,20}\b(missing|not (installed|fitted|used))\b'
+      - '\b(opened|loosened|removed|broke)\b[^.]{0,30}\b(while|whilst) (still )?(pressuri[sz]ed|under pressure)\b'
+    effective:
+      - '\bwhip ?checks? (were |was )?(installed|fitted|in place|used)\b'
+      - '\b(depressuri[sz]ed|bled down|vented)\b[^.]{0,30}\b(verified|confirmed|before)\b'
+  machine_guarding:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\bguards?\b(?! ?rails?)[^.]{0,20}\b(removed|missing|open|not (in place|fitted|replaced))\b'
+      - '\b(removed|missing) (machine |the )?guards?\b(?! ?rails?)'
+      - '\bunguarded (machine|shaft|coupling|belt|conveyor|rotating)\b'
+    effective:
+      - '\bguards?\b(?! ?rails?)[^.]{0,20}\b(in place|fitted|secured|intact)\b'
+  respiratory_protection:
+    critical: true
+    on_conflict: unknown
+    failed:
+      - '\b(not|wasn''t|was not|were not|weren''t) wearing (his |her |their |a |an |any )?(respirator|scba|breathing apparatus|escape set|ba set)\b'
+      - '\bwithout (his |her |their |a |an |any )?(respirator|scba|breathing apparatus|escape set|ba set)\b'
+      - '\bno (respirator|scba|breathing apparatus|escape set|ba set)\b'
+    effective:
+      - '\bwearing (his |her |their |the |a |an )?(respirator|scba|breathing apparatus|ba set)\b'
+  ppe:
+    critical: false
+    on_conflict: unknown
+    failed:
+      - '\b(not|wasn''t|was not|were not|weren''t) wearing (his |her |their |a |any )?(gloves|safety glasses|goggles|hard ?hat|helmet|face ?shield|ppe|hearing protection|safety shoes|boots)\b'
+      - '\bwithout (his |her |their |a |any )?(gloves|safety glasses|goggles|hard ?hat|helmet|face ?shield|ppe|hearing protection|safety shoes)\b'
+      - '\bno (gloves|safety glasses|goggles|hard ?hat|helmet|face ?shield|ppe)\b'
+    effective:
+      - '\bwearing (his |her |their |the |full |appropriate |required )?(ppe|face ?shield)\b'
+
+# A failed barrier of this category demonstrates the listed harm mechanism.
+barrier_implies_mechanism:
+  fall_protection: fall_from_height
+  respiratory_protection: hazardous_atmosphere
+  energy_isolation: hazardous_energy_release
+  gas_testing: hazardous_atmosphere
+  confined_space_attendant: hazardous_atmosphere
+  fire_watch_combustibles: fire_explosion
+  lifting_equipment_integrity: struck_by_suspended_load
+  lift_planning: struck_by_suspended_load
+  vehicle_occupant_protection: vehicle_collision_rollover
+  safe_driving_behaviour: vehicle_collision_rollover
+  dropped_object_prevention: dropped_object
+  hose_pressure_restraint: pressure_release
+  machine_guarding: caught_between_crush
+
+rule_triggers:
+  LSR-01:
+    - '\b(bypass(ed|ing)?|overrid(e|den|ing)|inhibit(ed)?|jumper(ed)?|defeated)\b'
+    - '\b(interlock|esd|emergency shutdown|safety instrumented)\b'
+  LSR-02:
+    - '\bconfined space\b'
+    - '\b(tank|vessel|manhole|sump|pit|silo) entry\b'
+    - '\bentered (the |a )?(\w+ )?(tank|vessel|manhole|sump|pit|silo|drum)\b'
+    - '\binside (the |a )?(\w+ )?(tank|vessel|manhole|sump|silo)\b'
+    - '\bentry into (the |a )?(\w+ )?(tank|vessel|manhole|sump|pit|silo)\b'
+    - '\b(hole ?watch|entry permit|entrant)\b'
+  LSR-03:
+    - '\b(driv(ing|er|ers)|drove|seat ?belts?|speeding|speed limit|journey management)\b'
+    - '\breversing (vehicle|truck|forklift|tanker|pick-?up)\b'
+    - '\b(vehicle|truck|tanker|pick-?up|lorry|bus)\b[^.]{0,30}\b(driv\w*|road|speed|travel\w*|collision|overturned|rolled)\b'
+  LSR-04:
+    - '\b(isolation|lock ?out|lock-out|loto|tag ?out|de-?energi[sz]\w*|zero[- ]energy|try[- ]start)\b'
+    - '\b(energi[sz]ed|stored energy|residual pressure)\b'
+    - '\bnot (been )?isolated\b|\bisolated (and|&)\b'
+  LSR-05:
+    - '\bhot work\b'
+    - '\bweld(ing|er|ed)?\b'
+    - '\bgrind(ing|er)\b'
+    - '\b(cutting torch|oxy-?acetylene|flame cutting|brazing|torch cutting|gas cutting)\b'
+  LSR-06:
+    - '\bline of fire\b'
+    - '\bdropped objects?\b'
+    - '\b(pinch|nip) ?points?\b'
+    - '\bwhip ?checks?\b'
+    - '\b(struck by|caught between|crushed)\b'
+    - '\b(swing radius|drop zone)\b'
+    - '\breversing (vehicle|truck|forklift|tanker)\b'
+    - '\b(walked|walking|standing|stood|working|positioned|was|were)\b (directly )?(under|beneath|below|underneath) (the |a )?(suspended |raised |lifted )?(load|lift)\b'
+    - '\bunder (the |a )?(suspended |raised |lifted )?load\b'
+    - '\b(swung|spun|whipped)\b'
+    - '\b(nearly|almost) (hit|struck)\b'
+    - '\bover (his|her|their) heads?\b'
+    - '\bwithin \d+(\.\d+)? ?m of\b'
+  LSR-07:
+    - '\bcranes?\b'
+    - '\b(slings?|rigging|shackles?|hoist|chain block|tag ?lines?|banksman|suspended load)\b'
+    - '\b(was|were|being) (lifted|hoisted)\b'
+    - '\blift(ing)? (operation|plan)\b'
+  LSR-08:
+    - '\bpermits?\b'
+    - '\b(work authori[sz]ation|unauthori[sz]ed)\b'
+  LSR-09:
+    - '\bat height\b'
+    - '\bscaffold(ing|s)?\b'
+    - '\bharness(es)?\b'
+    - '\b(fell|fall|falling) from\b'
+    - '\b(ladder|roof edge|monkey board|mewp|man ?basket|open edge|unprotected edge|floor opening)\b'
+
+# Hazard categories reported under "other hazards" (outside the LSR list).
+hazard_to_other:
+  slip_trip_same_level: OH-SLIP_TRIP
+  manual_handling_strain: OH-MANUAL_HANDLING
+  chemical_contact: OH-CHEMICAL
+  environmental_release: OH-ENVIRONMENT
+# Mapped to other hazards ONLY when the related LSR is not tagged.
+hazard_to_other_unless_rule:
+  hazardous_atmosphere: {other: OH-TOXIC_GAS, unless: [LSR-02]}
+  fire_explosion: {other: OH-FIRE, unless: [LSR-05]}
+  pressure_release: {other: OH-PRESSURE, unless: [LSR-04, LSR-06]}
+  electrical_shock: {other: OH-ELECTRICAL, unless: [LSR-04]}
